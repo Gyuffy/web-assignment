@@ -1,0 +1,90 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.container {
+    text-align: center;
+    width: 500px;
+}
+
+.status {
+    margin-bottom: 20px;
+}
+
+.game-screen {
+    width: 100%;
+    height: 300px;
+    background-color: #ddd;
+    margin-bottom: 20px;
+    position: relative;
+    border: 2px solid #333;
+}
+
+.tank {
+    width: 50px;
+    height: 50px;
+    background-color: green;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s;
+}
+
+.gun {
+    width: 10px;
+    height: 50px;
+    background-color: #444;
+    position: absolute;
+    top: -25px; /* 탱크의 상단에 위치 */
+    left: 50%;
+    transform-origin: center bottom; /* 포신의 회전 중심점 */
+    transition: transform 0.3s ease-in-out;
+}
+
+.controls button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+}
+
+.controls button:hover {
+    background-color: #45a049;
+}
+
+/* 연료 게이지 스타일 */
+.fuel-gauge-container {
+    width: 100%;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+.fuel-gauge {
+    height: 100%;
+    width: 100%;
+    background-color: #00ff00;
+    border-radius: 10px;
+}
+
+input[type="range"] {
+    width: 100%;
+    margin: 10px 0;
+}

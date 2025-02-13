@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>무인 탱크 조작</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 탱크의 상태 표시 -->
+        <div class="status">
+            <p>속도: <span id="speed">0</span> km/h</p>
+            <p>탄환 수: <span id="ammo">10</span></p>
+            <!-- 연료 게이지 -->
+            <p>연료:</p>
+            <div class="fuel-gauge-container">
+                <div class="fuel-gauge" id="fuel-gauge"></div>
+            </div>
+            <!-- 포신 각도 -->
+            <p>포신 각도: <span id="gunAngleDisplay">0</span>°</p>
+            <input type="range" id="gunAngleSlider" min="0" max="60" value="0" step="1">
+        </div>
+
+        <!-- 탱크와 맵을 보여주는 화면 -->
+        <div class="game-screen">
+            <div class="tank" id="tank">
+                <div class="gun" id="gun"></div>
+            </div>
+        </div>
+
+        <!-- 조작 버튼 -->
+        <div class="controls">
+            <button id="moveForward">앞으로</button>
+            <button id="moveBackward">뒤로</button>
+            <button id="turnLeft">왼쪽 회전</button>
+            <button id="turnRight">오른쪽 회전</button>
+            <button id="fire">사격</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
