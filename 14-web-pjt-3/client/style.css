@@ -1,0 +1,119 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+ul {
+  padding: 0;
+}
+
+li {
+  list-style: none;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+}
+
+li:hover {
+  cursor: pointer;
+  color: white;
+  background-color: gray;
+}
+
+main {
+  display: flex;
+}
+
+nav {
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  color: black;
+  width: 160px;
+  margin-right: 50px;
+}
+
+.status {
+  display: flex;
+  justify-content: space-between;
+  width: 70vw;
+}
+
+#velocityChart {
+  margin-right: 40px;
+}
+
+aside {
+  background-color: rgb(58, 57, 57);
+  width: 160px;
+  border-radius: 5px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+aside > label {
+  margin-top: 20px;
+}
+
+aside > #input-velocity {
+  width: 140px;
+}
+
+footer {
+  height: 50px;
+  margin-top: 10px;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+footer > button {
+  margin: 10px;
+  border: none;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+}
+
+footer > button:hover {
+  cursor: pointer;
+}
+
+footer > .start {
+  background-color: #36a2eb;
+}
+
+.start:hover {
+  background-color: rgb(40, 40, 250);
+}
+
+footer > .stop {
+  background-color: #ff6384;
+}
+
+.stop:hover {
+  background-color: red;
+}
+
+footer > .reset {
+  background-color: #ffcd56;
+}
+
+.reset:hover {
+  background-color: orange;
+}
+
+footer > .camera {
+  background-color: gray;
+}
+
+.camera:hover {
+  background-color: black;
+}
