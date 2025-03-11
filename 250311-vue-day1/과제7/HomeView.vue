@@ -13,7 +13,7 @@ const todos = ref([
   },
   {
     id: 3,
-    title: "밥먹기",
+    title: "차마시기",
     isComplete: true,
   },
 ]);

@@ -24,11 +24,11 @@ const members = ref([
 </script>
 
 <template>
-  <template v-if="password !== PASSWORD">
+  <template v-if="password !== MY_PASSWORD">
     <p>암호를 입력하세요</p>
     <input type="password" v-model="password" />
   </template>
-  <ul v-if="password === PASSWORD">
+  <ul v-if="password === MY_PASSWORD">
     <template v-for="member in members" :key="member.id">
       <li>
         이름: {{ member.name }} <br />
