@@ -8,7 +8,7 @@ const WEB_PORT = 8000;
 const TCP_SOCKET_PORT = 9000;
 
 // REST 함수가 들어갈 영역
-// ... 
+// ...
 // ...
 
 const server = http.createServer(app);
@@ -26,19 +26,23 @@ const tcpSocketServer = net.createServer((socket) => {
   tcpSocketClients.push(socket);
 
   socket.on("data", (data) => {
-    // console.log("Received from TCP Socket client: ", data.toString());
+    const messages = data.toString().trim().split("\n"); // 여러 개의 JSON 데이터 처리
 
-    // TCP 클라이언트에게 브로드캐스트 (시뮬레이터 => 로봇 || 로봇 => 시뮬레이터)
-    tcpSocketClients.forEach((tcpSocketClient) => {
-      // 자기 자신에게는 메시지 보내지 않음
-      if (tcpSocketClient !== socket) {
-        tcpSocketClient.write(data);
-      }
-    });
+    messages.forEach((msg) => {
+      if (!msg.trim()) return;
 
-    // WebSocket 클라이언트에게 브로드캐스트 (로봇 => 대시보드 || 시뮬레이터 => 대시보드)
-    webSocketClients.forEach((webSocketClient) => {
-      webSocketClient.send(data);
+      // TCP 클라이언트에게 브로드캐스트 (시뮬레이터 => 로봇 || 로봇 => 시뮬레이터)
+      tcpSocketClients.forEach((tcpSocketClient) => {
+        // 자기 자신에게는 메시지 보내지 않음
+        if (tcpSocketClient !== socket) {
+          tcpSocketClient.write(data);
+        }
+      });
+
+      // WebSocket 클라이언트에게 브로드캐스트 (로봇 => 대시보드 || 시뮬레이터 => 대시보드)
+      webSocketClients.forEach((webSocketClient) => {
+        webSocketClient.send(data);
+      });
     });
   });
 
@@ -95,4 +99,3 @@ tcpSocketServer.listen(TCP_SOCKET_PORT, () => {
 server.listen(WEB_PORT, () => {
   console.log(`Web server listening on port ${WEB_PORT}`);
 });
-

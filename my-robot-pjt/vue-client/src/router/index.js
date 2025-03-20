@@ -9,13 +9,13 @@ const router = createRouter({
       component: () => import("@/views/HomeView.vue"),
     },
     {
-      path: "/intelligent",
-      name: "intelligent",
-      component: () => import("@/views/IntelligentMode.vue"),
+      path: "/dashboard",
+      name: "dashboard",
+      component: () => import("@/views/DashBoard.vue"),
     },
     {
-      path: "/controlled",
-      name: "controlled",
+      path: "/settings",
+      name: "settings",
       component: () => import("@/views/ControlledMode.vue"),
     },
   ],

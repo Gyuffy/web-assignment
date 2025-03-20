@@ -1,10 +1,17 @@
 import socket
 import threading
 import json
-from dotenv import load_dotenv
 import os
 import time
 import random
+import RPi.GPIO as GPIO
+from dotenv import load_dotenv
+
+# GPIO 설정
+LED_PIN = 18  # 사용할 GPIO 핀 번호
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LED_PIN, GPIO.OUT)
+GPIO.output(LED_PIN, GPIO.LOW)  # 초기 상태: OFF
 
 # 환경 변수 로드
 load_dotenv(".env.local")
@@ -24,7 +31,22 @@ robot_status = {
 send_data = True  # 데이터 전송 플래그
 lock = threading.Lock()  # 멀티스레드 환경에서 안전한 상태 변경을 위한 Lock
 
+# LED 점멸 제어 이벤트 (이벤트 루프)
+led_event = threading.Event()
 
+# LED 점멸 함수
+def blink_led():
+    while True:
+        if robot_status["power"] == "on":
+            GPIO.output(LED_PIN, GPIO.HIGH)
+            time.sleep(0.5)
+            GPIO.output(LED_PIN, GPIO.LOW)
+            time.sleep(0.5)
+        else:
+            GPIO.output(LED_PIN, GPIO.LOW)  # power가 off면 LED 끄기
+            time.sleep(0.1)  # 대기하면서 CPU 사용량 절약
+
+# TCP 메시지 수신 및 상태 업데이트
 def set_robot_status(client_socket):
     global send_data
 
@@ -49,25 +71,27 @@ def set_robot_status(client_socket):
                                     "Invalid power value. Must be 'on' or 'off'."
                                 )
                             robot_status["power"] = value
-                            send_data = (
-                                value == "on"
-                            )  # power가 "off"이면 데이터 전송 중지
+                            send_data = (value == "on")  # power가 "off"이면 데이터 전송 중지
+
+                            # LED 점멸 이벤트 제어
+                            if value == "on":
+                                print("LED Event: ON")
+                                led_event.set()  # LED 점멸 시작
+                            else:
+                                print("LED Event: OFF")
+                                led_event.clear()  # LED 점멸 중지
+                                GPIO.output(LED_PIN, GPIO.LOW)  # 안전하게 LED 끄기
+
                         elif key == "language" and value not in ["eng", "kor"]:
-                            raise ValueError(
-                                "Invalid language value. Must be 'eng' or 'kor'."
-                            )
+                            raise ValueError("Invalid language value. Must be 'eng' or 'kor'.")
                         elif key == "cur_dir" :
                             try:
                                 dir_int = int(value)
                                 if not (-100 <= dir_int <= 100):
-                                    raise ValueError(
-                                        "Invalid current direction value. Must be between -100 and 100."
-                                    )
+                                    raise ValueError("Invalid current direction value. Must be between -100 and 100." )
                                 robot_status[key] = str(dir_int)
                             except ValueError:
-                                raise ValueError(
-                                    "Invalid current direction value. Must be between -100 and 100."
-                                )
+                                raise ValueError("Invalid current direction value. Must be between -100 and 100.")
                         elif key == "speed":
                             try:
                                 speed_int = int(value)
@@ -95,7 +119,7 @@ def set_robot_status(client_socket):
         except Exception as e:
             print(f"Error in set_robot_status: {e}")
 
-
+# 주기적으로 robot_status 전송
 def send_robot_status(client_socket):
     global send_data
 
@@ -119,7 +143,7 @@ def send_robot_status(client_socket):
             print(f"Error in send_robot_status: {e}")
             break
 
-
+# 서버 연결 및 스레드 실행
 def connect_to_server():
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -128,14 +152,18 @@ def connect_to_server():
 
         thread1 = threading.Thread(target=set_robot_status, args=(client_socket,))
         thread2 = threading.Thread(target=send_robot_status, args=(client_socket,))
+        thread3 = threading.Thread(target=blink_led, daemon=True)  # LED 점멸 스레드 실행
 
         thread1.start()
         thread2.start()
+        thread3.start()
 
         thread1.join()
         thread2.join()
     except Exception as e:
         print(f"Failed to connect: {e}")
+    finally:
+        GPIO.cleanup()  # 프로그램 종료 시 GPIO 핀 초기화
 
 
 if __name__ == "__main__":

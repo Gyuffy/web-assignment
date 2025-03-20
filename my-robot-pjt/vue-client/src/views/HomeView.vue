@@ -27,7 +27,6 @@ import HomeNav from "@/components/HomeNav.vue";
 }
 
 header {
-  border: 1px solid black;
 }
 
 .main-container {
@@ -35,7 +34,6 @@ header {
 }
 
 nav {
-  border: 1px solid black;
 }
 
 main {

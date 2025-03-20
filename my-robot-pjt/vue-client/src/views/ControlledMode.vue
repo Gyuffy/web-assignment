@@ -1,13 +1,13 @@
 <script setup>
 import HomeNav from "@/components/HomeNav.vue";
 import AddMain from "@/components/AddMain.vue";
-
+import HomeHeader from "@/components/HomeHeader.vue";
 </script>
 
 <template>
   <div class="root">
     <header>
-      <h1>추가 하기</h1>
+      <HomeHeader />
     </header>
     <div class="main-container">
       <nav>
@@ -27,7 +27,6 @@ import AddMain from "@/components/AddMain.vue";
 }
 
 header {
-  border: 1px solid black;
 }
 
 .main-container {
@@ -35,7 +34,6 @@ header {
 }
 
 nav {
-  border: 1px solid black;
 }
 
 main {
