@@ -99,7 +99,7 @@ function initializeGraph() {
   box-shadow: 0 6px 20px rgba(0, 132, 255, 0.5);
 }
 
-/* 🔥 Initialize 버튼 스타일 */
+/* Initialize 버튼 스타일 */
 .fancy-button.secondary {
   background: linear-gradient(135deg, #4caf50, #8bc34a);
 }

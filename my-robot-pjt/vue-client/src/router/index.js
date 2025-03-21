@@ -16,7 +16,7 @@ const router = createRouter({
     {
       path: "/settings",
       name: "settings",
-      component: () => import("@/views/ControlledMode.vue"),
+      component: () => import("@/views/SettingView.vue"),
     },
   ],
 });

@@ -8,10 +8,15 @@ import RPi.GPIO as GPIO
 from dotenv import load_dotenv
 
 # GPIO 설정
-LED_PIN = 18  # 사용할 GPIO 핀 번호
+LED_PIN = 17  # 사용할 GPIO 핀 번호
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(LED_PIN, GPIO.OUT)
 GPIO.output(LED_PIN, GPIO.LOW)  # 초기 상태: OFF
+
+SERVO_PIN = 18  # ✅ 서보모터 PWM 핀
+GPIO.setup(SERVO_PIN, GPIO.OUT)
+servo_pwm = GPIO.PWM(SERVO_PIN, 50)  # 50Hz PWM
+servo_pwm.start(0)  # 초기 duty cycle
 
 # 환경 변수 로드
 load_dotenv(".env.local")
@@ -26,6 +31,7 @@ robot_status = {
     "cur_dir": "0",
     "speed": "30",
     "client_message": "false",
+    "neck_angle": "90",
 }
 
 send_data = True  # 데이터 전송 플래그
@@ -45,6 +51,16 @@ def blink_led():
         else:
             GPIO.output(LED_PIN, GPIO.LOW)  # power가 off면 LED 끄기
             time.sleep(0.1)  # 대기하면서 CPU 사용량 절약
+
+def set_servo_angle(angle):
+    # 각도(0~180)를 PWM 듀티사이클(2~12)로 변환
+    try:
+        angle = max(0, min(180, int(angle)))
+        duty = 2 + (angle / 18)
+        servo_pwm.ChangeDutyCycle(duty)
+        print(f"🔧 Servo angle set to {angle}° (duty: {duty:.2f})")
+    except Exception as e:
+        print(f"❌ Error setting servo angle: {e}")
 
 # TCP 메시지 수신 및 상태 업데이트
 def set_robot_status(client_socket):
@@ -104,6 +120,16 @@ def set_robot_status(client_socket):
                                 raise ValueError(
                                     "Invalid speed value. Must be an integer between 0 and 100."
                                 )
+                        
+                        elif key == "neck_angle":
+                            try:
+                                angle_int = int(value)
+                                if not(0<= angle_int <= 180):
+                                    raise ValueError("neck_angle must be between 0 and 180.")
+                                robot_status[key] = str(angle_int)
+                                set_servo_angle(angle_int)
+                            except ValueError:
+                                raise ValueError("Invalid neck_angle. Must be integer 0~180.")
                         else:
                             robot_status[key] = value
 

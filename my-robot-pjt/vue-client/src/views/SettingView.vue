@@ -1,6 +1,6 @@
 <script setup>
 import HomeNav from "@/components/HomeNav.vue";
-import AddMain from "@/components/AddMain.vue";
+import AddMain from "@/components/SettingMain.vue";
 import HomeHeader from "@/components/HomeHeader.vue";
 </script>
 
@@ -26,14 +26,8 @@ import HomeHeader from "@/components/HomeHeader.vue";
   height: 95vh;
 }
 
-header {
-}
-
 .main-container {
   display: flex;
-}
-
-nav {
 }
 
 main {

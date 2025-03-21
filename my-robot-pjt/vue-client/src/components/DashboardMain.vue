@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, nextTick } from "vue";
 import Chart from "chart.js/auto";
+import { initSocket } from "@/socket"; // ✅ 추가
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 const robotStatus = ref({ speed: 0, date_time: "", cur_dir: 0 });
@@ -8,11 +9,9 @@ const chartRef = ref(null);
 const dirChartRef = ref(null);
 let chartInstance = null;
 let dirChartInstance = null;
-let socket = null;
 
-// WebSocket 연결 설정
 function connectSocket() {
-  socket = new WebSocket(SOCKET_URL);
+  const socket = initSocket(SOCKET_URL); // ✅ 전역 소켓 초기화 및 재사용
 
   socket.onopen = () => console.log("WebSocket Connected");
   socket.onmessage = async (event) => {
@@ -22,8 +21,8 @@ function connectSocket() {
     robotStatus.value.cur_dir = Number(data.cur_dir);
     robotStatus.value.date_time = data.date_time || new Date().toLocaleTimeString();
   };
-  socket.onclose = () => console.log("❌ WebSocket Disconnected");
   socket.onerror = (event) => console.error("WebSocket error:", event);
+  // socket.onclose는 전역 연결 유지 위해 제거
 }
 
 // 차트 생성
@@ -32,7 +31,14 @@ function createChart() {
     type: "line",
     data: {
       labels: [],
-      datasets: [{ label: "Speed", data: [], borderColor: "#4bc0c0" }],
+      datasets: [{
+        label: "Speed",
+        data: [],
+        borderColor: "#4bc0c0",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        fill: true,
+        tension: 0.4,
+      }],
     },
     options: { responsive: true },
   });
@@ -41,20 +47,27 @@ function createChart() {
     type: "line",
     data: {
       labels: [],
-      datasets: [{ label: "Direction", data: [], borderColor: "#ff6384" }],
+      datasets: [{
+        label: "Direction",
+        data: [],
+        borderColor: "#ff6384",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        fill: true,
+        tension: 0.4,
+      }],
     },
     options: { responsive: true },
   });
 }
 
-// 차트 완전 초기화
+// 차트 리셋
 function resetGraph() {
   if (chartInstance && dirChartInstance) {
-    chartInstance.destroy(); // 기존 차트 제거
-    dirChartInstance.destroy(); // 기존 차트 제거
+    chartInstance.destroy();
+    dirChartInstance.destroy();
 
     nextTick(() => {
-      createChart(); // 차트 재생성
+      createChart();
       console.log("📊 그래프가 완전히 초기화되었습니다.");
     });
   }
@@ -65,24 +78,38 @@ onMounted(() => {
     if (chartRef.value && dirChartRef.value) {
       createChart();
       connectSocket();
-      window.addEventListener("resetGraph", resetGraph); // 이벤트 리스너 등록
+      window.addEventListener("resetGraph", resetGraph);
     }
   });
 });
 
-// 데이터 업데이트
+// 차트 데이터 갱신
 watch(() => robotStatus.value.speed, () => {
   if (chartInstance) {
-    chartInstance.data.labels.push(robotStatus.value.date_time);
+    const time = robotStatus.value.date_time;
+    chartInstance.data.labels.push(time);
     chartInstance.data.datasets[0].data.push(robotStatus.value.speed);
+
+    if (chartInstance.data.labels.length > 10) {
+      chartInstance.data.labels.shift();
+      chartInstance.data.datasets[0].data.shift();
+    }
+
     chartInstance.update();
   }
 });
 
 watch(() => robotStatus.value.cur_dir, () => {
   if (dirChartInstance) {
-    dirChartInstance.data.labels.push(robotStatus.value.date_time);
+    const time = robotStatus.value.date_time;
+    dirChartInstance.data.labels.push(time);
     dirChartInstance.data.datasets[0].data.push(robotStatus.value.cur_dir);
+
+    if (dirChartInstance.data.labels.length > 10) {
+      dirChartInstance.data.labels.shift();
+      dirChartInstance.data.datasets[0].data.shift();
+    }
+
     dirChartInstance.update();
   }
 });
@@ -100,7 +127,6 @@ watch(() => robotStatus.value.cur_dir, () => {
 </template>
 
 <style scoped>
-/* 차트 컨테이너 스타일 */
 .chart-container {
   display: flex;
   flex-wrap: wrap;
@@ -110,7 +136,6 @@ watch(() => robotStatus.value.cur_dir, () => {
   padding: 20px;
 }
 
-/* 차트 박스 스타일 */
 .chart-wrapper {
   height: 300px;
   width: 500px;
