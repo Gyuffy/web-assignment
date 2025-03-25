@@ -76,8 +76,6 @@
 ## 🗃️ DB 구성 (MySQL)
 
 ```sql
-sql
-복사편집
 CREATE TABLE `command_log` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `power` VARCHAR(10),
